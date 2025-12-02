@@ -1,0 +1,14 @@
+[package]
+name = "string-sum"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+name = "string_sum"
+
+# produce shared library for Python to import from
+crate-type = ["cdylib"]
+
+[dependencies.pyo3]
+version =- "0.15.1"
+features = ["extension-module"]
