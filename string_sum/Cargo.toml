@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2018"
 
 [lib]
-name = "string_sum"
+#name = "string_sum"
+name = "custom_name"
 
 # produce shared library for Python to import from
 crate-type = ["cdylib"]
