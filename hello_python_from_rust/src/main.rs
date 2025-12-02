@@ -13,6 +13,6 @@ fn main() -> PyResult<()> {
         let user: String = py.eval(code, None, Some(&locals))?.extract()?;
 
         println!("Hello {}, I'm Python {}'", user, version);
-        Ok(());
+        Ok(())
     })
 }
