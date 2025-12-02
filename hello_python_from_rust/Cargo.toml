@@ -7,4 +7,6 @@ edition = "2024"
 
 [dependencies.pyo3]
 version = ">=0.22"
+
+# this is necessary to automatically initialize the Python interpreter
 features = ["auto-initialize"]
