@@ -12,5 +12,6 @@ crate-type = ["cdylib"]
 
 [dependencies.pyo3]
 # version = "0.15.1" # this was in the user guide, but my Python version is incompatible
-version = ">=0.22"
+#version = ">=0.22"
+version = "0.27.2"
 features = ["extension-module"]
