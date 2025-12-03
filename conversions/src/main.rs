@@ -12,9 +12,11 @@ fn main() -> PyResult<()> {
         let module = PyModule::from_code(
             py,
             c_str!(
-                "class Foo:
-                def __init__(self):
-                    self.my_string = 'test'"
+r#"
+class Foo:
+    def __init__(self):
+        self.my_string = 'test'
+"#
             ),
             c_str!(""),
             c_str!(""),
