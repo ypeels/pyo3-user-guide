@@ -39,6 +39,8 @@ fn main() {
     Python::with_gil(|py| {
         let fun = pyo3::wrap_pyfunction!(connect, py).unwrap();
         let err = fun.call1(("0.0.0.0",)).unwrap_err();
-        assert!(err.is_instance::<PyOSError>(py));
+        println!("err = {:?}", err);
+        //assert!(err.is_instance(py, PyOSError)); // uh, not sure how to get this syntax to work
+        assert!(err.is_instance_of::<PyOSError>(py));
     });
 }
