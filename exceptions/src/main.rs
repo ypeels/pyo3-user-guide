@@ -1,46 +1,40 @@
-use pyo3::exceptions::PyOSError;
+#![allow(dead_code)]
 use pyo3::prelude::*;
-use std::fmt;
+use pyo3::types::IntoPyDict;
+use pyo3::exceptions::PyException;
 
-#[derive(Debug)]
-struct CustomIOError;
+#[pyclass(extends=PyException)]
+struct CustomError {
+    #[pyo3(get)]
+    url: String,
 
-impl std::error::Error for CustomIOError {}
+    #[pyo3(get)]
+    message: String,
+}
 
-impl fmt::Display for CustomIOError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Oh no!")
+#[pymethods]
+impl CustomError {
+    #[new]
+    fn new(url: String, message: String) -> Self {
+        Self { url, message }
     }
 }
 
-impl std::convert::From<CustomIOError> for PyErr {
-    fn from(err: CustomIOError) -> PyErr {
-        PyOSError::new_err(err.to_string())
-    }
-}
-
-pub struct Connection { /* ... */}
-
-fn bind(addr: String) -> Result<Connection, CustomIOError> {
-    if &addr == "0.0.0.0"{
-        Err(CustomIOError)
-    } else {
-        Ok(Connection{ /* ... */})
-    }
-}
-
-#[pyfunction]
-fn connect(s: String) -> Result<(), CustomIOError> {
-    bind(s)?;
-    Ok(())
-}
-
-fn main() {
+/// https://pyo3.rs/v0.27.2/exception.html#creating-more-complex-exceptions
+fn main() -> PyResult<()> {
     Python::attach(|py| {
-        let fun = pyo3::wrap_pyfunction!(connect, py).unwrap();
-        let err = fun.call1(("0.0.0.0",)).unwrap_err();
-        println!("err = {:?}", err);
-        //assert!(err.is_instance(py, PyOSError)); // uh, not sure how to get this syntax to work
-        assert!(err.is_instance_of::<PyOSError>(py));
-    });
+        let ctx = [("CustomError", py.get_type::<CustomError>())].into_py_dict(py)?;
+        pyo3::py_run!(
+            py,
+            *ctx,
+            "assert str(CustomError) == \"<class 'builtins.CustomError'>\", repr(CustomError)"
+        );
+        pyo3::py_run!(py, *ctx, "assert CustomError('https://example.com', 'something went bad').args == ('https://example.com', 'something went bad')");
+        pyo3::py_run!(py, *ctx, "assert CustomError('https://example.com', 'something went bad').url == 'https://example.com'");
+
+        pyo3::py_run!(py, *ctx, "print(CustomError)");
+
+
+        Ok(())
+    })
 }
