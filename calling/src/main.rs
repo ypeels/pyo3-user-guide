@@ -3,6 +3,7 @@ use pyo3::types::PyTuple;
 use pyo3::ffi::c_str;
 
 
+/// https://pyo3.rs/v0.27.2/python-from-rust/function-calls
 fn main() -> PyResult<()> {
     let arg1 = "arg1";
     let arg2 = "arg2";
