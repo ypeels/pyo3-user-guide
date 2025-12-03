@@ -36,7 +36,7 @@ fn connect(s: String) -> Result<(), CustomIOError> {
 }
 
 fn main() {
-    Python::with_gil(|py| {
+    Python::attach(|py| {
         let fun = pyo3::wrap_pyfunction!(connect, py).unwrap();
         let err = fun.call1(("0.0.0.0",)).unwrap_err();
         println!("err = {:?}", err);
