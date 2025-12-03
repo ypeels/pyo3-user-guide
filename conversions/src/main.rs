@@ -33,7 +33,7 @@ class Foo:
 }
 */
 
-
+/*
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
@@ -60,3 +60,47 @@ fn main() -> PyResult<()> {
     })
 }
 
+*/
+
+
+use pyo3::prelude::*;
+use pyo3::ffi::c_str;
+
+#[derive(FromPyObject)]
+struct RustyStruct {
+
+    #[pyo3(item("key"))]
+    my_dict_val: String,
+
+    #[pyo3(attribute("name"))]
+    my_name: String,
+}
+
+
+fn main() -> PyResult<()> {
+    Python::attach(|py| -> PyResult<()> {
+        let module = PyModule::from_code(
+            py,
+            c_str!(
+r#"
+class Foo(dict):
+    def __init__(self):
+        super().__init__()
+        self.name = 'judge'
+        self['key'] = 'value'
+"#
+            ),
+            c_str!(""),
+            c_str!(""),
+        )?;
+        
+        let class = module.getattr("Foo")?;
+        let instance = class.call0()?;
+        let rustystruct: RustyStruct = instance.extract()?;
+        assert_eq!(rustystruct.my_dict_val, "value");
+        println!("rustystruct.my_dict_val = {}", rustystruct.my_dict_val);
+        println!("rustystruct.my_name = {}", rustystruct.my_name);
+        //println!("rustystruct.__class__.__name__ = {}", rustystruct.__class__.__name__); // fails
+        Ok(())
+    })
+}
